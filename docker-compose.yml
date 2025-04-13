@@ -1,0 +1,44 @@
+
+version: '3'
+
+services:
+  db:
+    image: mysql:8.0
+    volumes:
+      - /mnt/docker-data/mysql_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - wordpress_net
+
+  wordpress:
+    image: wordpress:latest
+    depends_on:
+      - db
+    volumes:
+      - /mnt/docker-data/wordpress_data:/var/www/html
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+    networks:
+      - wordpress_net
+  nginx:
+    image: nginx:latest
+    depends_on:
+      - wordpress
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - wordpress_net
+
+networks:
+  wordpress_net:
