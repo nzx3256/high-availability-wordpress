@@ -6,7 +6,7 @@ services:
     image: mysql:8.0
     volumes:
       - /mnt/docker-data/mysql_data:/var/lib/mysql
-    restart: unless-stopped
+    #restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -14,37 +14,43 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     networks:
       - wordpress_net
-    healthcheck:
-      test: ["CMD", "wget", "-q", "-", "http://localhost"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-      start_period: 15s
-
   wordpress:
     image: wordpress:latest
-    depends_on:
-      - db
+    #depends_on:
+      #- db
     volumes:
       - /mnt/docker-data/wordpress_data:/var/www/html
-    restart: always
+    #restart: always
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: ${MYSQL_USER}
       WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+    deploy:
+      replicas: 5
+      update_config:
+        parallelism: 2
+        delay: 10s
+        failure_action: rollback
     networks:
       - wordpress_net
     healthcheck:
-      test: ["CMD", "wget", "-q0", "-", "http://localhost"]
-      interval: 30s
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 5s
       timeout: 3s
       retries: 3
       start_period: 15s
   nginx:
     image: nginx:latest
-    depends_on:
-      - wordpress
+    #depends_on:
+      #- wordpress
+    #restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 15s
     ports:
       - "80:80"
     volumes:
@@ -54,3 +60,4 @@ services:
 
 networks:
   wordpress_net:
+    #driver: overlay
