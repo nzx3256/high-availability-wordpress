@@ -14,10 +14,6 @@ This project was developed for **COP3604 – System Administration Using Unix**.
 - **Storage:** Persistent volumes via Linux LVM
 - **Secrets:** Environment variables or Google Secret Manager
 
-## Architecture Diagram
-![Architecture Diagram](./images/architecture.png)  
-> _Replace with your system diagram._
-
 ##  Technologies Used
 - Google Cloud Platform (GCE, VPC, IAM)
 - Docker
@@ -57,32 +53,6 @@ docker run -d -p 80:80 your-image-name
 ### 5. Connect Database & Set Up Persistent Storage
 - Run `lvm-setup.sh` located in `/storage/` to create persistent volumes.
 - Database container uses mounted volume from LVM.
-
-## Testing
-
-- Load balancing tested using ApacheBench (ab)
-- Failure simulations conducted by stopping containers and checking recovery
-- Logs and screenshots located in `/docs/testing/`
-
-## Project Report
-Download the full project documentation:  
-[Final Report PDF](./docs/Final_Project_Report.pdf)
-
-## Video Demonstration
-Check out the video demo of the system in action:  
-[Watch the Demo](https://youtu.be/your-demo-link)
-
-## Team Members & Roles
-
-| Name            | Role                        |
-|-----------------|-----------------------------|
-| Alice Smith     | Project Lead                |
-| John Doe        | Infrastructure & Automation |
-| Maria Lopez     | Application Deployment      |
-| Tirth Shah      | Data Management             |
-
-## What We Learned
-Each member shared takeaways in the project report under the "What We Learned" section.
 
 ## Directory Structure
 ```
