@@ -1,3 +1,5 @@
+.env*
 *cron
 *.txt
 stack.yaml
+__

@@ -5,52 +5,56 @@ services:
     image: mysql:8.0
     volumes:
       - /mnt/docker-data/mysql_data:/var/lib/mysql
-    #restart: always
+    container_name: mysql_container
+    hostname: mysql_container
+    ports:
+      - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: my_database
+      MYSQL_USER: my_user
+      MYSQL_PASSWORD: my_password
+      MYSQL_ROOT_PASSWORD: rootpassword
     networks:
       - wordpress_net
+    command: '--default-authentication-plugin=caching_sha2_password'
   wordpress:
-    image: wordpress:latest
-    #container_name: wordpress 
+    image: wordpress:6.6
     depends_on:
       - db
     volumes:
       - /mnt/docker-data/wordpress_data:/var/www/html
-    #restart: always
     environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: ${MYSQL_USER}
-      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
-      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+      WORDPRESS_DB_NAME: my_database
+      WORDPRESS_DB_USER: my_user
+      WORDPRESS_DB_PASSWORD: my_password
+      WORDPRESS_DB_HOST: mysql_container:3306
     deploy:
       replicas: 5
-      update_config:
-        parallelism: 2
-        delay: 10s
-        failure_action: rollback
+      restart_policy:
+        condition: any
+#      update_config:
+#        parallelism: 2
+#        delay: 10s
+#        failure_action: rollback
     networks:
       - wordpress_net
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost"]
-      interval: 5s
-      timeout: 3s
-      retries: 3
-      start_period: 15s
+#    healthcheck:
+#      test: ["CMD-SHELL", "curl -fs http://localhost || exit 1"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+#      start_period: 30s
   nginx:
-    image: nginx:latest
+    image: nginx:1.26
+    restart: always
     depends_on:
       - wordpress
-    #restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-      start_period: 15s
+#    healthcheck:
+#      test: ["CMD-SHELL", "curl -fs http://localhost || exit 1"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+#      start_period: 30s
     ports:
       - "80:80"
     volumes:
@@ -61,3 +65,4 @@ services:
 networks:
   wordpress_net:
     driver: overlay
+    attachable: true
