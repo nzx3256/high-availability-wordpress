@@ -7,8 +7,8 @@ services:
       - /mnt/docker-data/mysql_data:/var/lib/mysql
     container_name: mysql_container
     hostname: mysql_container
-    ports:
-      - "3306:3306"
+    expose:
+      - "3306"
     environment:
       MYSQL_DATABASE: my_database
       MYSQL_USER: my_user
@@ -36,6 +36,10 @@ services:
 #        parallelism: 2
 #        delay: 10s
 #        failure_action: rollback
+    ports:
+      - "80"
+    expose:
+      - "80"
     networks:
       - wordpress_net
 #    healthcheck:
