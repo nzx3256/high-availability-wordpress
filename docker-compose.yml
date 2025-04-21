@@ -29,7 +29,7 @@ services:
       WORDPRESS_DB_PASSWORD: my_password
       WORDPRESS_DB_HOST: mysql_container:3306
     deploy:
-      replicas: 5
+      replicas: 3
       restart_policy:
         condition: any
 #      update_config:
